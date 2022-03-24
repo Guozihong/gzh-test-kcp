@@ -30,6 +30,8 @@ import * as kcpconnector from 'pinus-kcp';
 app.configure('production|development', 'connector', function () {
     app.set('connectorConfig', {
         connector: kcpconnector.Connector,
+        app: pinus.app,
+        heartbeat: 30,
         // kcp options
         sndwnd: 64,
         rcvwnd: 64,
@@ -46,7 +48,11 @@ app.configure('production|development', 'connector', function () {
 
 // start app
 app.start(() => {
-    let client = new kcpconnector.PinusClient('127.0.0.1', 3010, { usePinusPackage: true });
+    let client = new kcpconnector.PinusClient({
+        host: '127.0.0.1',
+        port 3010, 
+        usePinusPackage: true
+    });
     client.on('connected', function(userdata){
         console.log('onConnected and send request...');
         let param = { userId: 101, channelId: 1001 };
@@ -54,7 +60,6 @@ app.start(() => {
             console.log('onRequest : ' + JSON.stringify(res));
         });
     });
-
     client.on('data', function(res){
         console.log('onData : ' + JSON.stringify(res));
         setTimeout(function() {

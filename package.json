@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bruce48x/pinus-kcp.git"
+    "url": "git+https://github.com/Guozihong/gzh-test-kcp.git"
   },
   "keywords": [
     "pinus",
@@ -32,7 +32,7 @@
     "@types/ws": "^8.5.3"
   },
   "bugs": {
-    "url": "https://github.com/bruce48x/pinus-kcp/issues"
+    "url": "https://github.com/Guozihong/gzh-test-kcp/issues"
   },
-  "homepage": "https://github.com/bruce48x/pinus-kcp#readme"
+  "homepage": "https://github.com/Guozihong/gzh-test-kcp#readme"
 }
