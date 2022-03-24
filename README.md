@@ -1,4 +1,4 @@
-pinus-kcp
+gzh-test-kcp
 ============
 
 [![Build Status][1]][2]
@@ -16,17 +16,7 @@ pinus-kcp
 
 ====
 
-修改自 [pomelo-kcp](https://www.npmjs.com/package/pomelo-kcp)
-
-pomelo-kcp 原本是所有连接共用一个 conv
-
-pinus-kcp 改为根据客户端发来的消息的 conv 创建对应的 kcpsocket 对象
-
-方便跟 tcp 连接相互配合着使用，参见 [kcp 的 wiki](https://github.com/skywind3000/kcp/wiki/Cooperate-With-Tcp-Server)
-
-====
-
-另外修复了若干BUG，提高性能和稳定性，欢迎使用和提建议。
+对 [pinus-kcp](https://github.com/bruce48x/pinus-kcp)进行了依赖升级，新增了kcp-client用于测试connector是否配置成功
 
 ## 安装
 
@@ -51,6 +41,32 @@ app.configure('production|development', 'connector', function () {
         // 每次处理 package 时都刷新心跳，避免收不到心跳包的情况下掉线的问题
         // 这个值默认是 false
         heartbeatOnData: true,  
+    });
+});
+
+// start app
+app.start(() => {
+    let client = new kcpconnector.PinusClient('127.0.0.1', 3010, { usePinusPackage: true });
+    client.on('connected', function(userdata){
+        console.log('onConnected and send request...');
+        let param = { userId: 101, channelId: 1001 };
+        client.request('connector.entryHandler.entry', { param }, (res: any) => {
+            console.log('onRequest : ' + JSON.stringify(res));
+        });
+    });
+
+    client.on('data', function(res){
+        console.log('onData : ' + JSON.stringify(res));
+        setTimeout(function() {
+            client.request('connector.entryHandler.entry', {
+                param: {
+                    userId: 101,
+                    channelId: 1001
+                }
+            }, (res: any) => {
+                console.log('onRequest : ' + JSON.stringify(res));
+            });
+        }, 500);
     });
 });
 ```
