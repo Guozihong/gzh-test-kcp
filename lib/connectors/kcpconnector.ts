@@ -58,8 +58,8 @@ export class Connector extends EventEmitter {
             this.bindSocket(this.socket, peer.address, peer.port, msg);
         });
         this.on('disconnect', (kcpsocket) => {
-            const conv = kcpsocket.opts.conv;
-            delete this.clientsForKcp[conv];
+            const socketUUID = kcpsocket.opts.socketUUID;
+            delete this.clientsForKcp[socketUUID];
         });
         this.socket.on('error', (error) => {
             return;
@@ -71,15 +71,16 @@ export class Connector extends EventEmitter {
 
     bindSocket(socket: dgram.Socket, address: string, port: number, msg?: any) {
         let conv, kcpsocket: KcpSocket | undefined;
+        let socketUUID = `${address}:${port}`;
         if (msg) {
             var kcpHead = pinuscoder.kcpHeadDecode(msg);
             conv = kcpHead.conv;
-            kcpsocket = this.clientsForKcp[conv];
+            kcpsocket = this.clientsForKcp[socketUUID];
         }
         if (!kcpsocket && conv) {
-            kcpsocket = new KcpSocket(curId++, socket, address, port, Object.assign({ conv: conv }, this.opts));
+            kcpsocket = new KcpSocket(curId++, socket, address, port, Object.assign({ conv, socketUUID }, this.opts));
             pinuscoder.setupHandler(this, kcpsocket, this.opts);
-            this.clientsForKcp[conv] = kcpsocket;
+            this.clientsForKcp[socketUUID] = kcpsocket;
             this.emit('connection', kcpsocket);
         }
         if (!!msg && !!kcpsocket) {

@@ -55,9 +55,8 @@ export class PinusClient extends EventEmitter {
         this.heartbeatId = undefined;
         var conv = opts.conv || 123;
         this.kcpobj = new kcp.KCP(conv, self);
-
         var nodelay = opts.nodelay || 0;
-        var interval = opts.interval || 100;
+        var interval = opts.interval || 40;
         var resend = opts.resend || 0;
         var nc = opts.nc || 0;
         this.kcpobj.nodelay(nodelay, interval, resend, nc);
