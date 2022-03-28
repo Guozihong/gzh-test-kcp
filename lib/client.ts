@@ -235,8 +235,10 @@ export class PinusClient extends EventEmitter {
     };
 
     disconnect () {
-        this.socket.disconnect();
-        this.kcpobj = null;
+        try {
+            this.socket.disconnect();
+        } catch (error) {}
+        this.kcpobj.release();
     }
 }
 //  // Run Test

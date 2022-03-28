@@ -13,10 +13,10 @@ gzh-test-kcp
 ============
 
 [Pinus](https://github.com/node-pinus/pinus) 的 kcp connector
+============
 
-====
-
-对 [pinus-kcp](https://github.com/bruce48x/pinus-kcp)进行了依赖升级，新增了kcp-client用于测试connector是否配置成功
+1. 对 [pinus-kcp](https://github.com/bruce48x/pinus-kcp)进行了依赖升级，新增了kcp-client用于测试connector是否配置成功
+2. 修改以conv创建对应的kcpsocket对象，为以host及port来创建kcpsocket对象，否则很难避免客户端conv一样带来无法正常连接问题
 
 ## 安装
 
