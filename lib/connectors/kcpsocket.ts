@@ -73,13 +73,9 @@ export class KcpSocket extends EventEmitter implements ISocket {
                 return;
             }
             this.kcpObj.input(msg);
-            var data = this.kcpObj.recv();
-            if (!!data) {
-                pinuscoder.handlePackage(this, data);
-            }
         });
 
-        this.check();
+        this.udpate();
         this.state = NetState.INITED;
 
         // 超时还未握手就绪，就删除此 socket
@@ -91,15 +87,20 @@ export class KcpSocket extends EventEmitter implements ISocket {
         }, 5000);
     }
 
-    check() {
+    udpate() {
         if (!this.kcpObj) {
             return;
         }
         const now = Date.now();
         this.kcpObj.update(now);
-        setTimeout(() => {
-            this.check();
-        }, this.kcpObj.check(now));
+
+        // 消息派发
+        var data: Buffer;
+        while ((data = this.kcpObj.recv()) && data) {
+            pinuscoder.handlePackage(this, data);
+        }
+
+        setTimeout(() => this.udpate(), this.kcpObj.check(now));
     }
 
     send(msg: any) {

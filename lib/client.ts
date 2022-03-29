@@ -75,22 +75,6 @@ export class PinusClient extends EventEmitter {
         });
         this.socket.on('message', function (msg, peer) {
             self.kcpobj.input(msg);
-            var data = self.kcpobj.recv();
-            if (!data) {
-                return;
-            }
-            if (self.opts?.usePinusPackage) {
-                var pkg = pinuscoder.coders.decodePackage(data);
-                if (Array.isArray(pkg)) {
-                    for (let i in pkg) {
-                        self.processPackage(pkg[i]);
-                    }
-                } else {
-                    self.processPackage(pkg);
-                }
-            } else {
-                self.emit('data', JSON.parse(data.toString()));
-            }
         });
 
         this.kcpobj.output((data, size, context) => {
@@ -124,7 +108,7 @@ export class PinusClient extends EventEmitter {
             self.socket.close();
         });
 
-        this.check();
+        this.update();
 
         if (!opts.usePinusPackage) {
             setTimeout(function () {
@@ -177,12 +161,26 @@ export class PinusClient extends EventEmitter {
         }
     }
 
-    private check () {
-        var self = this;
+    private update () {
         this.kcpobj.update(Date.now());
-        setTimeout(function () {
-            self.check();
-        }, this.kcpobj.check(Date.now()));
+
+        var data: Buffer;
+        while ((data = this.kcpobj.recv()) && data) {
+            if (this.opts?.usePinusPackage) {
+                var pkg = pinuscoder.coders.decodePackage(data);
+                if (Array.isArray(pkg)) {
+                    for (let i in pkg) {
+                        this.processPackage(pkg[i]);
+                    }
+                } else {
+                    this.processPackage(pkg);
+                }
+            } else {
+                this.emit('data', JSON.parse(data.toString()));
+            }
+        }
+
+        setTimeout(() => this.update(), this.kcpobj.check(Date.now()));
     };
 
     private send (data: any) {
