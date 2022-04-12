@@ -1,6 +1,6 @@
 {
   "name": "gzh-test-kcp",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "用于 pinus (ts 版 pomelo)，提供一个 kcp 的 connector",
   "main": "./dist/index.js",
   "scripts": {
